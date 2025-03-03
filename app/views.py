@@ -19,32 +19,17 @@ def about():
     """Render the website's about page."""
     return render_template('about.html', name="Mary Jane")
 
-@app.route('/contact/', methods=['GET', 'POST'])
+@app.route('/contact', methods=['GET','POST'])
 def contact():
     form = ContactForm()
     if form.validate_on_submit():
-        # Extract data from the form
-        name = form.name.data
-        email = form.email.data
-        subject = form.subject.data
-        message = form.message.data
-
-        # Create the email message
-        msg = Message(
-            subject,
-            sender=(name, email),  # Sender's name and email
-            recipients=["to@example.com"]  # Replace with the recipient's email address
-        )
-        msg.body = f"Message from {name} ({email}):\n\n{message}"  # Email body
-
-        try:
-            mail.send(msg)  # Send the email
-            flash("Message sent successfully!", "success")
-        except Exception as e:
-            flash("An error occurred while sending the email. Please try again later.", "danger")
-            print(f"Error: {e}")
-
-        return redirect(url_for("contact"))
+        msg = Message(form.subject.data,
+                      sender=(form.name.data, form.email.data),
+                      recipients=["to@example.com"])  # Replace with a test email
+        msg.body = form.message.data
+        mail.send(msg)
+        flash("Email sent successfully!", "success")
+        return redirect(url_for('contact'))
     return render_template('contact.html', form=form)
 
 ###
